@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, Button, StyleSheet, Alert } from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
-import RNZipArchive from 'react-native-zip-archive'; // For handling .cbz (zip) files
+import RNZipArchive from 'react-native-zip-archive';  // For handling .cbz (zip) files
+import RNFS from 'react-native-fs';  // For file system access
 
 const ImportScreen = ({ navigation }) => {
   const [fileUri, setFileUri] = useState(null);
@@ -10,7 +11,7 @@ const ImportScreen = ({ navigation }) => {
   const pickCBZFile = async () => {
     try {
       const res = await DocumentPicker.pick({
-        type: [DocumentPicker.types.allFiles],
+        type: [DocumentPicker.types.allFiles], // Make sure this allows .cbz file types
       });
 
       // Check if the picked file is a .cbz file
@@ -35,6 +36,10 @@ const ImportScreen = ({ navigation }) => {
       // Unzip the .cbz file to a temporary directory
       const unzipDestination = `${RNFS.DocumentDirectoryPath}/unzipped`;
 
+      // Ensure that the directory exists
+      await RNFS.mkdir(unzipDestination);
+
+      // Unzip the .cbz file
       const unzippedPath = await RNZipArchive.unzip(uri, unzipDestination);
 
       // Log the unzipped file path

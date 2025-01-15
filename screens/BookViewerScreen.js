@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { View, FlatList, Image, StyleSheet, Text } from 'react-native';
-import RNFS from 'react-native-fs'; // For filesystem access
+import RNFS from 'react-native-fs';  // For filesystem access
 
 const BookViewerScreen = ({ route }) => {
-  const { bookUri } = route.params;
+  const { bookUri } = route.params;  // Get the unzipped file path passed from ImportScreen
   const [imagePaths, setImagePaths] = useState([]);
 
   // Fetch image files after unzipping the .cbz file
   useEffect(() => {
     const fetchImages = async () => {
       try {
+        // Read the contents of the unzipped directory
         const files = await RNFS.readDir(bookUri);
         const imageFiles = files.filter((file) => file.name.endsWith('.jpg') || file.name.endsWith('.png'));
+
+        // Set the image paths to display
         setImagePaths(imageFiles);
       } catch (err) {
         console.error('Error reading image files:', err);
@@ -19,7 +22,7 @@ const BookViewerScreen = ({ route }) => {
     };
 
     fetchImages();
-  }, [bookUri]);
+  }, [bookUri]);  // Re-fetch images if bookUri changes
 
   return (
     <View style={styles.container}>
